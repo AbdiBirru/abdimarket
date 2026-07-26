@@ -10,10 +10,28 @@ export type Product = {
   stock: number;
 };
 
-export async function getProducts(): Promise<Product[]> {
+export type ProductFilters = {
+  query?: string;
+  category?: string;
+  sort?: string;
+};
+
+export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
+  const { query, category, sort } = filters;
+
   const products = await prisma.product.findMany({
-    orderBy: { createdAt: "asc" },
+    where: {
+      ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
+      ...(category && category !== "All" ? { category } : {}),
+    },
+    orderBy:
+      sort === "price-asc"
+        ? { price: "asc" as const }
+        : sort === "price-desc"
+        ? { price: "desc" as const }
+        : { createdAt: "asc" as const },
   });
+
   return products.map((p) => ({
     id: p.id,
     name: p.name,
