@@ -1,9 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Product } from "@/lib/products";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="group overflow-hidden rounded-2xl border border-line bg-white">
+    <Link
+      href={`/products/${product.id}`}
+      className="group block overflow-hidden rounded-2xl border border-line bg-white"
+    >
       <div className="relative aspect-square overflow-hidden bg-line">
         <Image
           src={product.imageUrl}
@@ -19,6 +23,6 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="mt-1 line-clamp-2 text-sm text-ink/70">{product.description}</p>
         <p className="mt-3 font-semibold text-brand">${product.price.toFixed(2)}</p>
       </div>
-    </div>
+    </Link>
   );
 }
