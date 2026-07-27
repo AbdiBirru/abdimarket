@@ -21,25 +21,27 @@ enum OrderStatus {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(CUSTOMER)
-  createdAt    DateTime @default(now())
-  orders       Order[]
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  passwordHash  String
+  role          Role           @default(CUSTOMER)
+  createdAt     DateTime       @default(now())
+  orders        Order[]
+  wishlistItems WishlistItem[]
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  description String
-  price       Decimal     @db.Decimal(10, 2)
-  imageUrl    String
-  category    String
-  stock       Int         @default(0)
-  createdAt   DateTime    @default(now())
-  orderItems  OrderItem[]
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  price         Decimal        @db.Decimal(10, 2)
+  imageUrl      String
+  category      String
+  stock         Int            @default(0)
+  createdAt     DateTime       @default(now())
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
 }
 
 model Order {
@@ -60,4 +62,15 @@ model OrderItem {
   product         Product @relation(fields: [productId], references: [id])
   quantity        Int
   priceAtPurchase Decimal @db.Decimal(10, 2)
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }

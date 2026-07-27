@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import ProductCard from "@/components/ProductCard";
 import ProductFilters from "@/components/ProductFilters";
 import { getProducts } from "@/lib/products";
+import { auth } from "@/lib/auth";
+import { getWishlistedProductIds } from "@/lib/wishlist";
 
 export default async function Home({
   searchParams,
@@ -9,7 +11,11 @@ export default async function Home({
   searchParams: Promise<{ q?: string; category?: string; sort?: string }>;
 }) {
   const { q, category, sort } = await searchParams;
-  const products = await getProducts({ query: q, category, sort });
+  const [products, session] = await Promise.all([
+    getProducts({ query: q, category, sort }),
+    auth(),
+  ]);
+  const wishlistedIds = await getWishlistedProductIds(session?.user?.id);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -31,7 +37,12 @@ export default async function Home({
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              isWishlisted={wishlistedIds.has(product.id)}
+              isLoggedIn={!!session?.user}
+            />
           ))}
         </div>
       )}

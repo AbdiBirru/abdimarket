@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { auth } from "@/lib/auth";
 import { getProductById } from "@/lib/products";
+import { isProductWishlisted } from "@/lib/wishlist";
 import AddToCartButton from "@/components/AddToCartButton";
+import WishlistButton from "@/components/WishlistButton";
 
 export default async function ProductPage({
   params,
@@ -10,11 +13,13 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = await getProductById(id);
+  const [product, session] = await Promise.all([getProductById(id), auth()]);
 
   if (!product) {
     notFound();
   }
+
+  const isWishlisted = await isProductWishlisted(session?.user?.id, product.id);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -31,6 +36,11 @@ export default async function ProductPage({
             className="object-cover"
             sizes="(min-width: 768px) 50vw, 100vw"
             priority
+          />
+          <WishlistButton
+            productId={product.id}
+            initialIsWishlisted={isWishlisted}
+            isLoggedIn={!!session?.user}
           />
         </div>
         <div>

@@ -18,6 +18,9 @@ export default async function Header() {
           </Link>
           {session?.user ? (
             <>
+              <Link href="/wishlist" className="text-sm font-medium text-ink hover:text-brand">
+                Wishlist
+              </Link>
               <Link href="/account" className="text-sm font-medium text-ink hover:text-brand">
                 {session.user.name}
               </Link>
