@@ -34,9 +34,12 @@ export default async function Header() {
             </>
           )}
           <div className="relative">
-            <button className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:border-brand hover:text-brand">
+            <Link
+              href="/cart"
+              className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:border-brand hover:text-brand"
+            >
               Cart
-            </button>
+            </Link>
             <CartBadge />
           </div>
         </nav>
