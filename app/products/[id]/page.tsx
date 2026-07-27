@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById } from "@/lib/products";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export default async function ProductPage({
   params,
@@ -44,12 +45,15 @@ export default async function ProductPage({
           <p className="mt-4 text-sm text-ink/60">
             {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
           </p>
-          <button
+          <AddToCartButton
+            product={{
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              imageUrl: product.imageUrl,
+            }}
             disabled={product.stock === 0}
-            className="mt-6 w-full rounded-full bg-brand px-6 py-3 font-medium text-paper hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-line disabled:text-ink/40 sm:w-auto"
-          >
-            Add to Cart
-          </button>
+          />
         </div>
       </div>
     </div>

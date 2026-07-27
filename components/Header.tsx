@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import SignOutButton from "./SignOutButton";
+import CartBadge from "./CartBadge";
 
 export default async function Header() {
   const session = await auth();
@@ -32,9 +33,12 @@ export default async function Header() {
               </Link>
             </>
           )}
-          <button className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:border-brand hover:text-brand">
-            Cart
-          </button>
+          <div className="relative">
+            <button className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:border-brand hover:text-brand">
+              Cart
+            </button>
+            <CartBadge />
+          </div>
         </nav>
       </div>
       <div
