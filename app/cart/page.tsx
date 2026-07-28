@@ -96,12 +96,12 @@ export default function CartPage() {
         <p className="text-2xl font-semibold text-brand">${total.toFixed(2)}</p>
       </div>
 
-      <button
-        disabled
-        className="mt-6 w-full cursor-not-allowed rounded-full bg-line px-6 py-3 font-medium text-ink/40"
+      <Link
+        href="/checkout"
+        className="mt-6 block w-full rounded-full bg-brand px-6 py-3 text-center font-medium text-paper hover:bg-brand-dark"
       >
-        Proceed to Checkout (arrives Day 13)
-      </button>
+        Proceed to Checkout
+      </Link>
     </div>
   );
 }
