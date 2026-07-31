@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCartStore } from "@/lib/cart-store";
 import { shippingSchema } from "@/lib/validations/checkout";
+import { createCheckoutSession } from "@/lib/actions/checkout";
+import { applyCoupon } from "@/lib/actions/coupons";
 
 export default function CheckoutForm() {
   const hasHydrated = useCartStore((state) => state.hasHydrated);
@@ -15,7 +17,13 @@ export default function CheckoutForm() {
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountAmount: number } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
   if (!hasHydrated) {
     return null;
@@ -36,10 +44,37 @@ export default function CheckoutForm() {
     );
   }
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = appliedCoupon ? Math.max(0, subtotal - appliedCoupon.discountAmount) : subtotal;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleApplyCoupon() {
+    if (!couponCode.trim()) return;
+
+    setIsApplyingCoupon(true);
+    setCouponError("");
+
+    const result = await applyCoupon(couponCode, subtotal);
+
+    setIsApplyingCoupon(false);
+
+    if ("error" in result) {
+      setCouponError(result.error ?? "Invalid coupon code.");
+      setAppliedCoupon(null);
+      return;
+    }
+
+    setAppliedCoupon(result);
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitError("");
 
     const result = shippingSchema.safeParse({
       fullName,
@@ -59,18 +94,26 @@ export default function CheckoutForm() {
     }
 
     setErrors({});
-    setSubmitted(true);
-  }
+    setIsSubmitting(true);
 
-  if (submitted) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="font-display text-2xl text-ink">Shipping details saved</h1>
-        <p className="mt-2 text-ink/70">
-          Real payment arrives on Day 14 — this form is validated and ready to connect to it.
-        </p>
-      </div>
+    const response = await createCheckoutSession(
+      items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+      result.data,
+      appliedCoupon?.code
     );
+
+    if ("error" in response) {
+      setSubmitError(response.error ?? "Something went wrong.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    window.location.href = response.url;
   }
 
   return (
@@ -135,11 +178,14 @@ export default function CheckoutForm() {
             </div>
           </div>
 
+          {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+
           <button
             type="submit"
-            className="mt-2 rounded-full bg-brand px-6 py-3 font-medium text-paper hover:bg-brand-dark"
+            disabled={isSubmitting}
+            className="mt-2 rounded-full bg-brand px-6 py-3 font-medium text-paper hover:bg-brand-dark disabled:opacity-50"
           >
-            Continue
+            {isSubmitting ? "Redirecting to payment..." : "Continue to Payment"}
           </button>
         </form>
 
@@ -155,9 +201,58 @@ export default function CheckoutForm() {
               </div>
             ))}
           </div>
-          <div className="mt-4 flex justify-between border-t border-line pt-4">
-            <span className="font-medium text-ink">Total</span>
-            <span className="text-xl font-semibold text-brand">${total.toFixed(2)}</span>
+
+          <div className="mt-4 border-t border-line pt-4">
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between rounded-full bg-green-50 px-4 py-2">
+                <span className="text-sm text-green-800">
+                  Code <strong>{appliedCoupon.code}</strong> applied
+                </span>
+                <button
+                  type="button"
+                  onClick={removeCoupon}
+                  className="text-sm text-green-800 underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Coupon code"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  className="flex-1 rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  disabled={isApplyingCoupon}
+                  className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink hover:border-brand hover:text-brand disabled:opacity-50"
+                >
+                  {isApplyingCoupon ? "..." : "Apply"}
+                </button>
+              </div>
+            )}
+            {couponError && <p className="mt-2 text-xs text-red-600">{couponError}</p>}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
+            <div className="flex justify-between text-sm text-ink/70">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            {appliedCoupon && (
+              <div className="flex justify-between text-sm text-green-700">
+                <span>Discount</span>
+                <span>−${appliedCoupon.discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="font-medium text-ink">Total</span>
+              <span className="text-xl font-semibold text-brand">${total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
       </div>

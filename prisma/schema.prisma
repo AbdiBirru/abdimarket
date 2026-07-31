@@ -20,6 +20,11 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -50,6 +55,7 @@ model Order {
   user               User        @relation(fields: [userId], references: [id])
   status             OrderStatus @default(PENDING)
   total              Decimal     @db.Decimal(10, 2)
+  couponCode         String?
   shippingName       String
   shippingPhone      String
   shippingAddress    String
@@ -78,4 +84,14 @@ model WishlistItem {
   createdAt DateTime @default(now())
 
   @@unique([userId, productId])
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Decimal      @db.Decimal(10, 2)
+  active        Boolean      @default(true)
+  expiresAt     DateTime?
+  createdAt     DateTime     @default(now())
 }
