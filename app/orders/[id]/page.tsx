@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import OrderStatusTracker from "@/components/OrderStatusTracker";
 
-export default async function OrderConfirmationPage({
+export default async function OrderDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
@@ -28,12 +29,23 @@ export default async function OrderConfirmationPage({
     <div className="mx-auto max-w-2xl px-4 py-16">
       <div className="text-center">
         <h1 className="font-display text-3xl text-ink">
-          {order.status === "PAID" ? "Order confirmed" : "Order pending"}
+          Order #{order.id.slice(-8).toUpperCase()}
         </h1>
-        <p className="mt-2 text-ink/70">Order #{order.id.slice(-8).toUpperCase()}</p>
+        <p className="mt-2 text-ink/70">
+          Placed{" "}
+          {order.createdAt.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </p>
       </div>
 
       <div className="mt-8 rounded-2xl border border-line bg-white p-6">
+        <OrderStatusTracker status={order.status} />
+      </div>
+
+      <div className="mt-6 rounded-2xl border border-line bg-white p-6">
         <h2 className="font-display text-lg text-ink">Items</h2>
         <div className="mt-4 flex flex-col gap-3">
           {order.items.map((item) => (
