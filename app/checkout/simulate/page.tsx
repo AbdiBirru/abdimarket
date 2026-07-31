@@ -1,32 +1,46 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "@/lib/cart-store";
+import { confirmSimulatedPayment } from "@/lib/actions/orders";
 
-export default function SimulatedPaymentPage() {
+function SimulatedPaymentInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
   const hasHydrated = useCartStore((state) => state.hasHydrated);
   const items = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
   const [isPaying, setIsPaying] = useState(false);
+  const [error, setError] = useState("");
 
   if (!hasHydrated) {
     return null;
   }
 
-  if (items.length === 0) {
+  if (!orderId) {
     router.push("/cart");
     return null;
   }
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  function handlePay(e: React.FormEvent) {
+  async function handlePay(e: React.FormEvent) {
     e.preventDefault();
     setIsPaying(true);
-    setTimeout(() => {
-      router.push("/checkout/success");
-    }, 1200);
+    setError("");
+
+    const result = await confirmSimulatedPayment(orderId as string);
+
+    if ("error" in result) {
+      setError(result.error ?? "Something went wrong.");
+      setIsPaying(false);
+      return;
+    }
+
+    clearCart();
+    router.push(`/orders/${orderId}`);
   }
 
   return (
@@ -62,6 +76,7 @@ export default function SimulatedPaymentPage() {
               className="w-1/2 rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
             />
           </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={isPaying}
@@ -72,5 +87,13 @@ export default function SimulatedPaymentPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function SimulatedPaymentPage() {
+  return (
+    <Suspense fallback={null}>
+      <SimulatedPaymentInner />
+    </Suspense>
   );
 }

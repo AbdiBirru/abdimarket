@@ -21,6 +21,9 @@ export default async function Header() {
               <Link href="/wishlist" className="text-sm font-medium text-ink hover:text-brand">
                 Wishlist
               </Link>
+              <Link href="/orders" className="text-sm font-medium text-ink hover:text-brand">
+                Orders
+              </Link>
               <Link href="/account" className="text-sm font-medium text-ink hover:text-brand">
                 {session.user.name}
               </Link>

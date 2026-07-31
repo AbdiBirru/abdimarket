@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 type CartItemInput = {
   id: string;
@@ -31,8 +32,27 @@ export async function createCheckoutSession(
     return { error: "Your cart is empty." };
   }
 
-  // No real payment gateway connected yet. This stands in for creating a
-  // Stripe/Chapa session and getting back a redirect URL — everything
-  // else in the app stays the same when a real one gets wired in later.
-  return { url: "/checkout/simulate" };
+  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const order = await prisma.order.create({
+    data: {
+      userId: session.user.id,
+      status: "PENDING",
+      total,
+      shippingName: shipping.fullName,
+      shippingPhone: shipping.phone,
+      shippingAddress: shipping.addressLine1,
+      shippingCity: shipping.city,
+      shippingPostalCode: shipping.postalCode,
+      items: {
+        create: items.map((item) => ({
+          productId: item.id,
+          quantity: item.quantity,
+          priceAtPurchase: item.price,
+        })),
+      },
+    },
+  });
+
+  return { url: `/checkout/simulate?orderId=${order.id}` };
 }
