@@ -34,6 +34,7 @@ model User {
   createdAt     DateTime       @default(now())
   orders        Order[]
   wishlistItems WishlistItem[]
+  reviews       Review[]
 }
 
 model Product {
@@ -47,6 +48,7 @@ model Product {
   createdAt     DateTime       @default(now())
   orderItems    OrderItem[]
   wishlistItems WishlistItem[]
+  reviews       Review[]
 }
 
 model Order {
@@ -94,4 +96,17 @@ model Coupon {
   active        Boolean      @default(true)
   expiresAt     DateTime?
   createdAt     DateTime     @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
 }

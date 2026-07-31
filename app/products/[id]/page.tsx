@@ -4,8 +4,12 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { getProductById } from "@/lib/products";
 import { isProductWishlisted } from "@/lib/wishlist";
+import { getProductReviews, getUserReviewForProduct } from "@/lib/reviews";
 import AddToCartButton from "@/components/AddToCartButton";
 import WishlistButton from "@/components/WishlistButton";
+import RatingSummary from "@/components/RatingSummary";
+import ReviewList from "@/components/ReviewList";
+import ReviewForm from "@/components/ReviewForm";
 
 export default async function ProductPage({
   params,
@@ -19,7 +23,12 @@ export default async function ProductPage({
     notFound();
   }
 
-  const isWishlisted = await isProductWishlisted(session?.user?.id, product.id);
+  const [isWishlisted, { reviews, averageRating, count }, existingReview] =
+    await Promise.all([
+      isProductWishlisted(session?.user?.id, product.id),
+      getProductReviews(product.id),
+      getUserReviewForProduct(session?.user?.id, product.id),
+    ]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -48,6 +57,9 @@ export default async function ProductPage({
             {product.category}
           </p>
           <h1 className="mt-2 font-display text-3xl text-ink">{product.name}</h1>
+          <div className="mt-2">
+            <RatingSummary averageRating={averageRating} count={count} />
+          </div>
           <p className="mt-4 text-2xl font-semibold text-brand">
             ${product.price.toFixed(2)}
           </p>
@@ -64,6 +76,42 @@ export default async function ProductPage({
             }}
             disabled={product.stock === 0}
           />
+        </div>
+      </div>
+
+      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div>
+          <h2 className="font-display text-xl text-ink">Reviews</h2>
+          <div className="mt-4">
+            <ReviewList reviews={reviews} />
+          </div>
+        </div>
+        <div>
+          <h2 className="font-display text-xl text-ink">
+            {session?.user ? "Your Review" : "Leave a Review"}
+          </h2>
+          <div className="mt-4">
+            {session?.user ? (
+              <ReviewForm
+                productId={product.id}
+                existingReview={
+                  existingReview
+                    ? { rating: existingReview.rating, comment: existingReview.comment }
+                    : null
+                }
+              />
+            ) : (
+              <p className="text-sm text-ink/60">
+                <Link
+                  href={`/login?callbackUrl=/products/${product.id}`}
+                  className="text-brand hover:underline"
+                >
+                  Log in
+                </Link>{" "}
+                to leave a review.
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
