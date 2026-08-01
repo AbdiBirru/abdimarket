@@ -1,7 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import type { OrderStatus } from "@/generated/prisma";
 
 type ConfirmResult = { error: string } | { success: true };
 
@@ -37,6 +39,35 @@ export async function confirmSimulatedPayment(orderId: string): Promise<ConfirmR
       })
     ),
   ]);
+
+  return { success: true };
+}
+
+type StatusResult = { error: string } | { success: true };
+
+const VALID_STATUSES: OrderStatus[] = ["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"];
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: string
+): Promise<StatusResult> {
+  const session = await auth();
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return { error: "Not authorized." };
+  }
+
+  if (!VALID_STATUSES.includes(status as OrderStatus)) {
+    return { error: "Invalid status." };
+  }
+
+  await prisma.order.update({
+    where: { id: orderId },
+    data: { status: status as OrderStatus },
+  });
+
+  revalidatePath("/admin/orders");
+  revalidatePath(`/orders/${orderId}`);
 
   return { success: true };
 }
