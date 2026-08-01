@@ -24,6 +24,11 @@ export default async function Header() {
               <Link href="/orders" className="text-sm font-medium text-ink hover:text-brand">
                 Orders
               </Link>
+              {session.user.role === "ADMIN" && (
+                <Link href="/admin" className="text-sm font-medium text-ink hover:text-brand">
+                  Admin
+                </Link>
+              )}
               <Link href="/account" className="text-sm font-medium text-ink hover:text-brand">
                 {session.user.name}
               </Link>
