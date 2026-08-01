@@ -54,6 +54,25 @@ export async function updateProduct(id: string, data: unknown): Promise<ActionRe
   return { success: true };
 }
 
+export async function updateStock(id: string, stock: number): Promise<ActionResult> {
+  const session = await requireAdmin();
+  if (!session) {
+    return { error: "Not authorized." };
+  }
+
+  if (stock < 0) {
+    return { error: "Stock can't be negative." };
+  }
+
+  await prisma.product.update({ where: { id }, data: { stock } });
+
+  revalidatePath("/admin/products");
+  revalidatePath("/admin");
+  revalidatePath("/");
+
+  return { success: true };
+}
+
 export async function deleteProduct(id: string): Promise<ActionResult> {
   const session = await requireAdmin();
   if (!session) {
