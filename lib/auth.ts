@@ -45,5 +45,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.role = token.role as string;
       return session;
     },
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const { pathname } = request.nextUrl;
+
+      const protectedPaths = ["/account", "/checkout", "/orders", "/wishlist", "/admin"];
+      const isProtected = protectedPaths.some((p) => pathname.startsWith(p));
+
+      if (isProtected && !isLoggedIn) {
+        return false;
+      }
+
+      return true;
+    },
   },
 });
