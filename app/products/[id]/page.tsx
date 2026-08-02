@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -7,6 +6,7 @@ import { isProductWishlisted } from "@/lib/wishlist";
 import { getProductReviews, getUserReviewForProduct } from "@/lib/reviews";
 import AddToCartButton from "@/components/AddToCartButton";
 import WishlistButton from "@/components/WishlistButton";
+import ProductGallery from "@/components/ProductGallery";
 import RatingSummary from "@/components/RatingSummary";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
@@ -37,15 +37,8 @@ export default async function ProductPage({
       </Link>
 
       <div className="mt-6 grid grid-cols-1 gap-10 md:grid-cols-2">
-        <div className="relative aspect-square overflow-hidden rounded-2xl bg-line">
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="(min-width: 768px) 50vw, 100vw"
-            priority
-          />
+        <div className="relative">
+          <ProductGallery images={product.images} productName={product.name} />
           <WishlistButton
             productId={product.id}
             initialIsWishlisted={isWishlisted}

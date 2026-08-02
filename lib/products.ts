@@ -10,6 +10,10 @@ export type Product = {
   stock: number;
 };
 
+export type ProductWithGallery = Product & {
+  images: string[];
+};
+
 export type ProductFilters = {
   query?: string;
   category?: string;
@@ -43,9 +47,14 @@ export async function getProducts(filters: ProductFilters = {}): Promise<Product
   }));
 }
 
-export async function getProductById(id: string): Promise<Product | null> {
-  const product = await prisma.product.findUnique({ where: { id } });
+export async function getProductById(id: string): Promise<ProductWithGallery | null> {
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { images: { orderBy: { position: "asc" } } },
+  });
+
   if (!product) return null;
+
   return {
     id: product.id,
     name: product.name,
@@ -54,5 +63,6 @@ export async function getProductById(id: string): Promise<Product | null> {
     imageUrl: product.imageUrl,
     category: product.category,
     stock: product.stock,
+    images: [product.imageUrl, ...product.images.map((img) => img.url)],
   };
 }

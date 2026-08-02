@@ -14,6 +14,7 @@ type Props = {
     category: string;
     imageUrl: string;
     stock: number;
+    additionalImageUrls: string[];
   };
 };
 
@@ -25,9 +26,20 @@ export default function ProductForm({ product }: Props) {
   const [category, setCategory] = useState(product?.category ?? "");
   const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
   const [stock, setStock] = useState(product?.stock.toString() ?? "");
+  const [additionalImageUrls, setAdditionalImageUrls] = useState<string[]>(
+    product?.additionalImageUrls ?? []
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function updatePhoto(index: number, value: string) {
+    setAdditionalImageUrls((prev) => prev.map((url, i) => (i === index ? value : url)));
+  }
+
+  function removePhoto(index: number) {
+    setAdditionalImageUrls((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +52,7 @@ export default function ProductForm({ product }: Props) {
       category,
       imageUrl,
       stock,
+      additionalImageUrls: additionalImageUrls.filter((url) => url.trim() !== ""),
     });
 
     if (!result.success) {
@@ -130,7 +143,7 @@ export default function ProductForm({ product }: Props) {
       </div>
 
       <div>
-        <label className="text-sm font-medium text-ink">Image URL</label>
+        <label className="text-sm font-medium text-ink">Cover Image URL</label>
         <input
           type="text"
           value={imageUrl}
@@ -139,6 +152,40 @@ export default function ProductForm({ product }: Props) {
           className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
         {errors.imageUrl && <p className="mt-1 text-xs text-red-600">{errors.imageUrl}</p>}
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-ink">Additional Photos</label>
+        <div className="mt-2 flex flex-col gap-2">
+          {additionalImageUrls.map((url, index) => (
+            <div key={index} className="flex gap-2">
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => updatePhoto(index, e.target.value)}
+                placeholder="https://picsum.photos/seed/extra/600/600"
+                className="flex-1 rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => removePhoto(index)}
+                className="text-sm text-ink/50 hover:text-red-600"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          {errors.additionalImageUrls && (
+            <p className="text-xs text-red-600">{errors.additionalImageUrls}</p>
+          )}
+          <button
+            type="button"
+            onClick={() => setAdditionalImageUrls((prev) => [...prev, ""])}
+            className="self-start text-sm font-medium text-brand hover:underline"
+          >
+            + Add another photo
+          </button>
+        </div>
       </div>
 
       {submitError && <p className="text-sm text-red-600">{submitError}</p>}

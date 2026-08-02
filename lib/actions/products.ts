@@ -26,7 +26,16 @@ export async function createProduct(data: unknown): Promise<ActionResult> {
     return { error: result.error.issues[0].message };
   }
 
-  await prisma.product.create({ data: result.data });
+  const { additionalImageUrls, ...productFields } = result.data;
+
+  await prisma.product.create({
+    data: {
+      ...productFields,
+      images: {
+        create: additionalImageUrls.map((url, i) => ({ url, position: i })),
+      },
+    },
+  });
 
   revalidatePath("/admin/products");
   revalidatePath("/");
@@ -45,7 +54,18 @@ export async function updateProduct(id: string, data: unknown): Promise<ActionRe
     return { error: result.error.issues[0].message };
   }
 
-  await prisma.product.update({ where: { id }, data: result.data });
+  const { additionalImageUrls, ...productFields } = result.data;
+
+  await prisma.product.update({
+    where: { id },
+    data: {
+      ...productFields,
+      images: {
+        deleteMany: {},
+        create: additionalImageUrls.map((url, i) => ({ url, position: i })),
+      },
+    },
+  });
 
   revalidatePath("/admin/products");
   revalidatePath("/");

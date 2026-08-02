@@ -8,7 +8,10 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const product = await prisma.product.findUnique({ where: { id } });
+  const product = await prisma.product.findUnique({
+    where: { id },
+    include: { images: { orderBy: { position: "asc" } } },
+  });
 
   if (!product) {
     notFound();
@@ -27,6 +30,7 @@ export default async function EditProductPage({
             category: product.category,
             imageUrl: product.imageUrl,
             stock: product.stock,
+            additionalImageUrls: product.images.map((img) => img.url),
           }}
         />
       </div>
