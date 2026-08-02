@@ -20,6 +20,7 @@ export default function ProductFilters() {
         params.delete(key);
       }
     }
+    params.delete("page");
     router.push(`${pathname}?${params.toString()}`);
   }
 

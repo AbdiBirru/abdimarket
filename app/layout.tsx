@@ -17,7 +17,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AbdiMarket",
+  title: {
+    default: "AbdiMarket — Shop the Marketplace",
+    template: "%s | AbdiMarket",
+  },
   description: "Shop the AbdiMarket marketplace.",
 };
 

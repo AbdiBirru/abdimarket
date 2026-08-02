@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { getProductById } from "@/lib/products";
 import { isProductWishlisted } from "@/lib/wishlist";
@@ -10,6 +11,29 @@ import ProductGallery from "@/components/ProductGallery";
 import RatingSummary from "@/components/RatingSummary";
 import ReviewList from "@/components/ReviewList";
 import ReviewForm from "@/components/ReviewForm";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProductById(id);
+
+  if (!product) {
+    return { title: "Product not found" };
+  }
+
+  return {
+    title: product.name,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [{ url: product.imageUrl }],
+    },
+  };
+}
 
 export default async function ProductPage({
   params,
@@ -30,8 +54,34 @@ export default async function ProductPage({
       getUserReviewForProduct(session?.user?.id, product.id),
     ]);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.images,
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: product.price,
+      availability:
+        product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+    },
+    ...(averageRating !== null && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: averageRating,
+        reviewCount: count,
+      },
+    }),
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link href="/" className="text-sm text-ink/60 hover:text-brand">
         ← Back to shop
       </Link>

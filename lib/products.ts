@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { prisma } from "./prisma";
 
 export type Product = {
@@ -18,36 +19,51 @@ export type ProductFilters = {
   query?: string;
   category?: string;
   sort?: string;
+  page?: number;
 };
 
-export async function getProducts(filters: ProductFilters = {}): Promise<Product[]> {
-  const { query, category, sort } = filters;
+const PAGE_SIZE = 6;
 
-  const products = await prisma.product.findMany({
-    where: {
-      ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
-      ...(category && category !== "All" ? { category } : {}),
-    },
-    orderBy:
-      sort === "price-asc"
-        ? { price: "asc" as const }
-        : sort === "price-desc"
-        ? { price: "desc" as const }
-        : { createdAt: "asc" as const },
-  });
+export async function getProducts(
+  filters: ProductFilters = {}
+): Promise<{ products: Product[]; totalPages: number }> {
+  const { query, category, sort, page = 1 } = filters;
 
-  return products.map((p) => ({
-    id: p.id,
-    name: p.name,
-    description: p.description,
-    price: Number(p.price),
-    imageUrl: p.imageUrl,
-    category: p.category,
-    stock: p.stock,
-  }));
+  const where = {
+    ...(query ? { name: { contains: query, mode: "insensitive" as const } } : {}),
+    ...(category && category !== "All" ? { category } : {}),
+  };
+
+  const [products, totalCount] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      orderBy:
+        sort === "price-asc"
+          ? { price: "asc" as const }
+          : sort === "price-desc"
+          ? { price: "desc" as const }
+          : { createdAt: "asc" as const },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  return {
+    products: products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      price: Number(p.price),
+      imageUrl: p.imageUrl,
+      category: p.category,
+      stock: p.stock,
+    })),
+    totalPages: Math.max(1, Math.ceil(totalCount / PAGE_SIZE)),
+  };
 }
 
-export async function getProductById(id: string): Promise<ProductWithGallery | null> {
+export const getProductById = cache(async (id: string): Promise<ProductWithGallery | null> => {
   const product = await prisma.product.findUnique({
     where: { id },
     include: { images: { orderBy: { position: "asc" } } },
@@ -65,4 +81,4 @@ export async function getProductById(id: string): Promise<ProductWithGallery | n
     stock: product.stock,
     images: [product.imageUrl, ...product.images.map((img) => img.url)],
   };
-}
+});
