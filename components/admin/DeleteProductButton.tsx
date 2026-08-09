@@ -36,7 +36,7 @@ export default function DeleteProductButton({
         <button
           onClick={handleDelete}
           disabled={isPending}
-          className="text-sm font-medium text-red-600 hover:underline"
+          className="text-sm font-medium text-error hover:underline"
         >
           {isPending ? "..." : "Confirm"}
         </button>
@@ -54,11 +54,11 @@ export default function DeleteProductButton({
     <div>
       <button
         onClick={() => setConfirming(true)}
-        className="text-sm font-medium text-ink/50 hover:text-red-600"
+        className="text-sm font-medium text-ink/50 hover:text-error"
       >
         Delete
       </button>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && <p className="mt-1 text-xs text-error">{error}</p>}
     </div>
   );
 }

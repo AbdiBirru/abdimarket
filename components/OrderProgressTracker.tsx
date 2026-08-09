@@ -8,8 +8,8 @@ const STAGES = [
 export default function OrderProgressTracker({ status }: { status: string }) {
   if (status === "CANCELLED") {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-center">
-        <p className="font-medium text-red-800">This order was cancelled</p>
+      <div className="rounded-2xl border border-error/30 bg-error-subtle p-4 text-center">
+        <p className="font-medium text-error-600">This order was cancelled</p>
       </div>
     );
   }
@@ -26,7 +26,7 @@ export default function OrderProgressTracker({ status }: { status: string }) {
             <div className="flex flex-col items-center">
               <div
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                  isComplete ? "bg-brand text-paper" : "bg-line text-ink/40"
+                  isComplete ? "bg-brand text-on-brand" : "bg-line text-ink/40"
                 }`}
               >
                 {isComplete ? "✓" : index + 1}

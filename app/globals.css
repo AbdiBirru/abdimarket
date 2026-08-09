@@ -1,13 +1,117 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #1C1B2E;
-  --color-paper: #FAF8F4;
-  --color-brand: #4C3A8C;
-  --color-brand-dark: #35295F;
-  --color-gold: #D9A441;
-  --color-line: #E7E2D8;
+  /* NEUTRAL — violet-tinted, for text & chrome */
+  --color-neutral-950: #14121F;
+  --color-neutral-900: #1C1930;
+  --color-neutral-800: #2C2740;
+  --color-neutral-700: #443C5C;
+  --color-neutral-600: #5E5578;
+  --color-neutral-500: #7A7295;
+  --color-neutral-400: #9C96B0;
+  --color-neutral-300: #C1BCCC;
+  --color-neutral-200: #DDDAE3;
+  --color-neutral-100: #EDEBF0;
+  --color-neutral-50:  #F6F5F8;
+
+  /* BRAND (PRIMARY) — indigo-violet */
+  --color-brand-50:  #F1EEF9;
+  --color-brand-100: #E1DBF0;
+  --color-brand-200: #C4B8E3;
+  --color-brand-300: #A28FD1;
+  --color-brand-400: #8267BC;
+  --color-brand-500: #6B4FA8;
+  --color-brand-600: #4C3A8C;
+  --color-brand-700: #3B2D6E;
+  --color-brand-800: #2C2153;
+  --color-brand-900: #1F173C;
+
+  /* SECONDARY — deep pine green */
+  --color-secondary-50:  #EEF3EE;
+  --color-secondary-100: #D7E4D6;
+  --color-secondary-200: #B2CBAF;
+  --color-secondary-300: #86AC82;
+  --color-secondary-400: #5D8B5A;
+  --color-secondary-500: #436D42;
+  --color-secondary-600: #2F5641;
+  --color-secondary-700: #244433;
+  --color-secondary-800: #1B3427;
+  --color-secondary-900: #13251C;
+
+  /* ACCENT — brushed gold, used sparingly */
+  --color-accent-50:  #FBF3E3;
+  --color-accent-100: #F5E4C0;
+  --color-accent-200: #EDCE8F;
+  --color-accent-300: #E1B25E;
+  --color-accent-400: #D19F45;
+  --color-accent-500: #C1893A;
+  --color-accent-600: #A06F2C;
+  --color-accent-700: #7D5722;
+
+  /* SEMANTIC STATE COLORS (raw steps) */
+  --color-error-50:  #F8E9E7;
+  --color-error-500: #A5432F;
+  --color-error-600: #8A3626;
+  --color-warning-50:  #FBEEDD;
+  --color-warning-500: #B5651D;
+  --color-warning-600: #965419;
+  --color-info-50:  var(--color-brand-50);
+  --color-info-500: var(--color-brand-600);
+  --color-info-600: var(--color-brand-700);
+  --color-success-50:  var(--color-secondary-50);
+  --color-success-500: var(--color-secondary-600);
+  --color-success-600: var(--color-secondary-700);
+
+  /* SEMANTIC TOKENS — what components consume */
+  --color-paper:          #FAF7F2;
+  --color-surface:        #FFFFFF;
+  --color-surface-muted:  var(--color-neutral-50);
+  --color-overlay:        rgb(28 25 48 / 0.5);
+
+  --color-line:           #E7E1D6;
+  --color-line-strong:    #D6CEBD;
+  --color-divider:        #EFEAE1;
+
+  --color-ink:            var(--color-neutral-900);
+  --color-ink-secondary:  var(--color-neutral-600);
+  --color-ink-tertiary:   var(--color-neutral-400);
+  --color-on-brand:       var(--color-paper);
+  --color-on-accent:      var(--color-neutral-900);
+
+  --color-brand:          var(--color-brand-600);
+  --color-brand-hover:    var(--color-brand-700);
+  --color-brand-active:   var(--color-brand-800);
+  --color-brand-subtle:   var(--color-brand-50);
+  --color-brand-dark:     var(--color-brand-700);
+
+  --color-secondary:        var(--color-secondary-600);
+  --color-secondary-hover:  var(--color-secondary-700);
+  --color-secondary-subtle: var(--color-secondary-50);
+
+  --color-gold:           var(--color-accent-500);
+  --color-accent:         var(--color-accent-500);
+  --color-accent-hover:   var(--color-accent-600);
+  --color-accent-subtle:  var(--color-accent-50);
+
+  --color-success:        var(--color-success-500);
+  --color-success-subtle: var(--color-success-50);
+  --color-warning:        var(--color-warning-500);
+  --color-warning-subtle: var(--color-warning-50);
+  --color-error:          var(--color-error-500);
+  --color-error-subtle:   var(--color-error-50);
+  --color-info:           var(--color-info-500);
+  --color-info-subtle:    var(--color-info-50);
+
+  --color-focus-ring:      var(--color-accent-500);
+  --color-disabled-bg:     var(--color-neutral-100);
+  --color-disabled-text:   var(--color-neutral-400);
+  --color-selected-bg:     var(--color-brand-50);
+  --color-selected-text:   var(--color-brand-700);
 
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-display: var(--font-fraunces), Georgia, serif;
+}
+
+body {
+  background-color: var(--color-paper);
 }

@@ -50,14 +50,14 @@ export default function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+          className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
         <PasswordInput value={password} onChange={setPassword} required />
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-error">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-brand px-6 py-3 font-medium text-paper hover:bg-brand-dark disabled:opacity-50"
+          className="rounded-full bg-brand px-6 py-3 font-medium text-on-brand hover:bg-brand-hover disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Log In"}
         </button>

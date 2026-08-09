@@ -90,9 +90,9 @@ export default function ProductForm({ product }: Props) {
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+          className="mt-1 w-full rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name}</p>}
+        {errors.name && <p className="mt-1 text-xs text-error">{errors.name}</p>}
       </div>
 
       <div>
@@ -101,9 +101,9 @@ export default function ProductForm({ product }: Props) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="mt-1 w-full rounded-2xl border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+          className="mt-1 w-full rounded-2xl border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        {errors.description && <p className="mt-1 text-xs text-red-600">{errors.description}</p>}
+        {errors.description && <p className="mt-1 text-xs text-error">{errors.description}</p>}
       </div>
 
       <div className="flex gap-4">
@@ -114,9 +114,9 @@ export default function ProductForm({ product }: Props) {
             inputMode="decimal"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+            className="mt-1 w-full rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
           />
-          {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price}</p>}
+          {errors.price && <p className="mt-1 text-xs text-error">{errors.price}</p>}
         </div>
         <div className="flex-1">
           <label className="text-sm font-medium text-ink">Stock</label>
@@ -125,9 +125,9 @@ export default function ProductForm({ product }: Props) {
             inputMode="numeric"
             value={stock}
             onChange={(e) => setStock(e.target.value)}
-            className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+            className="mt-1 w-full rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
           />
-          {errors.stock && <p className="mt-1 text-xs text-red-600">{errors.stock}</p>}
+          {errors.stock && <p className="mt-1 text-xs text-error">{errors.stock}</p>}
         </div>
       </div>
 
@@ -137,9 +137,9 @@ export default function ProductForm({ product }: Props) {
           type="text"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+          className="mt-1 w-full rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        {errors.category && <p className="mt-1 text-xs text-red-600">{errors.category}</p>}
+        {errors.category && <p className="mt-1 text-xs text-error">{errors.category}</p>}
       </div>
 
       <div>
@@ -149,9 +149,9 @@ export default function ProductForm({ product }: Props) {
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           placeholder="https://picsum.photos/seed/whatever/600/600"
-          className="mt-1 w-full rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+          className="mt-1 w-full rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        {errors.imageUrl && <p className="mt-1 text-xs text-red-600">{errors.imageUrl}</p>}
+        {errors.imageUrl && <p className="mt-1 text-xs text-error">{errors.imageUrl}</p>}
       </div>
 
       <div>
@@ -164,19 +164,19 @@ export default function ProductForm({ product }: Props) {
                 value={url}
                 onChange={(e) => updatePhoto(index, e.target.value)}
                 placeholder="https://picsum.photos/seed/extra/600/600"
-                className="flex-1 rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
+                className="flex-1 rounded-full border border-line bg-surface px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => removePhoto(index)}
-                className="text-sm text-ink/50 hover:text-red-600"
+                className="text-sm text-ink/50 hover:text-error"
               >
                 Remove
               </button>
             </div>
           ))}
           {errors.additionalImageUrls && (
-            <p className="text-xs text-red-600">{errors.additionalImageUrls}</p>
+            <p className="text-xs text-error">{errors.additionalImageUrls}</p>
           )}
           <button
             type="button"
@@ -188,12 +188,12 @@ export default function ProductForm({ product }: Props) {
         </div>
       </div>
 
-      {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+      {submitError && <p className="text-sm text-error">{submitError}</p>}
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-2 rounded-full bg-brand px-6 py-3 font-medium text-paper hover:bg-brand-dark disabled:opacity-50"
+        className="mt-2 rounded-full bg-brand px-6 py-3 font-medium text-on-brand hover:bg-brand-hover disabled:opacity-50"
       >
         {isSubmitting ? "Saving..." : product ? "Update Product" : "Create Product"}
       </button>

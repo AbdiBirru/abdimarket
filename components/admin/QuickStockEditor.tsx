@@ -40,7 +40,7 @@ export default function QuickStockEditor({
         inputMode="numeric"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-16 rounded-full border border-line bg-white px-2 py-1 text-center text-sm text-ink focus:border-brand focus:outline-none"
+        className="w-16 rounded-full border border-line bg-surface px-2 py-1 text-center text-sm text-ink focus:border-brand focus:outline-none"
       />
       <button
         onClick={handleSave}
@@ -49,7 +49,7 @@ export default function QuickStockEditor({
       >
         {isPending ? "..." : "Save"}
       </button>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="text-xs text-error">{error}</p>}
     </div>
   );
 }

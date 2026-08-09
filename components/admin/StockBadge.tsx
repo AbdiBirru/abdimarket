@@ -7,9 +7,9 @@ const LABELS = {
 };
 
 const STYLES = {
-  out: "bg-red-100 text-red-800",
-  low: "bg-yellow-100 text-yellow-800",
-  ok: "bg-green-100 text-green-800",
+  out: "bg-error-subtle text-error-600",
+  low: "bg-warning-subtle text-warning-600",
+  ok: "bg-success-subtle text-success-600",
 };
 
 export default function StockBadge({ stock }: { stock: number }) {
