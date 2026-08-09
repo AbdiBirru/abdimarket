@@ -2,17 +2,19 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import SignOutButton from "./SignOutButton";
 import CartBadge from "./CartBadge";
+import MobileNav from "./MobileNav";
 
 export default async function Header() {
   const session = await auth();
 
   return (
-    <header className="bg-paper">
+    <header className="relative bg-paper">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Link href="/" className="font-display text-2xl font-semibold text-brand">
           AbdiMarket
         </Link>
-        <nav className="flex items-center gap-4 sm:gap-6">
+
+        <nav className="hidden items-center gap-6 sm:flex">
           <Link href="/" className="text-sm font-medium text-ink hover:text-brand">
             Shop
           </Link>
@@ -44,6 +46,9 @@ export default async function Header() {
               </Link>
             </>
           )}
+        </nav>
+
+        <div className="flex items-center gap-3">
           <div className="relative">
             <Link
               href="/cart"
@@ -53,7 +58,12 @@ export default async function Header() {
             </Link>
             <CartBadge />
           </div>
-        </nav>
+          <MobileNav
+            isLoggedIn={!!session?.user}
+            userName={session?.user?.name ?? null}
+            isAdmin={session?.user?.role === "ADMIN"}
+          />
+        </div>
       </div>
       <div
         className="h-1.5 w-full"
