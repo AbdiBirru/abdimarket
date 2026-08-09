@@ -6,11 +6,10 @@ import SignOutButton from "./SignOutButton";
 
 type Props = {
   isLoggedIn: boolean;
-  userName: string | null;
   isAdmin: boolean;
 };
 
-export default function MobileNav({ isLoggedIn, userName, isAdmin }: Props) {
+export default function MobileNav({ isLoggedIn, isAdmin }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -60,32 +59,16 @@ export default function MobileNav({ isLoggedIn, userName, isAdmin }: Props) {
                     Admin
                   </Link>
                 )}
-                <Link
-                  href="/account"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-ink hover:text-brand"
-                >
-                  {userName}
-                </Link>
                 <SignOutButton />
               </>
             ) : (
-              <>
-                <Link
-                  href="/login"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-ink hover:text-brand"
-                >
-                  Log In
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-ink hover:text-brand"
-                >
-                  Sign Up
-                </Link>
-              </>
+              <Link
+                href="/register"
+                onClick={() => setIsOpen(false)}
+                className="text-sm font-medium text-ink hover:text-brand"
+              >
+                Sign Up
+              </Link>
             )}
           </nav>
         </div>

@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -21,26 +23,28 @@ export default function RegisterPage() {
       body: JSON.stringify({ name, email, password }),
     });
 
-    setLoading(false);
-
     if (!res.ok) {
       const data = await res.json();
       setError(data.error ?? "Something went wrong.");
+      setLoading(false);
       return;
     }
 
-    setSuccess(true);
-  }
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-  if (success) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <h1 className="font-display text-2xl text-ink">Account created</h1>
-        <p className="mt-2 text-ink/70">
-          Sign-in arrives on Day 9 — for now, your account is saved and ready.
-        </p>
-      </div>
-    );
+    setLoading(false);
+
+    if (result?.error) {
+      router.push("/login");
+      return;
+    }
+
+    router.push("/account");
+    router.refresh();
   }
 
   return (
