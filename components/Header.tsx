@@ -46,9 +46,6 @@ export default async function Header() {
               </Link>
             </>
           )}
-        </nav>
-
-        <div className="flex items-center gap-3">
           <div className="relative">
             <Link
               href="/cart"
@@ -58,25 +55,25 @@ export default async function Header() {
             </Link>
             <CartBadge />
           </div>
-          {session?.user ? (
-            <Link
-              href="/account"
-              className="max-w-[80px] truncate text-sm font-medium text-ink hover:text-brand sm:hidden"
-            >
-              {session.user.name}
-            </Link>
-          ) : (
-            <Link
-              href="/login"
-              className="text-sm font-medium text-ink hover:text-brand sm:hidden"
-            >
-              Log In
-            </Link>
-          )}
+        </nav>
+
+        <div className="flex items-center gap-4 sm:hidden">
           <MobileNav
             isLoggedIn={!!session?.user}
             isAdmin={session?.user?.role === "ADMIN"}
           />
+          {session?.user ? (
+            <Link
+              href="/account"
+              className="max-w-[80px] truncate text-sm font-medium text-ink hover:text-brand"
+            >
+              {session.user.name}
+            </Link>
+          ) : (
+            <Link href="/login" className="text-sm font-medium text-ink hover:text-brand">
+              Log In
+            </Link>
+          )}
         </div>
       </div>
       <div

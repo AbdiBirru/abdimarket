@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import PasswordInput from "./PasswordInput";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -51,14 +52,7 @@ export default function LoginForm() {
           required
           className="rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="rounded-full border border-line bg-white px-4 py-2 text-sm text-ink focus:border-brand focus:outline-none"
-        />
+        <PasswordInput value={password} onChange={setPassword} required />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"
